@@ -1,0 +1,169 @@
+* {
+  font-family: "Inter", sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  padding: 20px;
+  text-align: center;
+  align-items: center;
+}
+
+.hero {
+  margin-bottom: 30px;
+}
+
+h1 {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  margin-bottom: 10px;
+}
+
+.sub {
+  font-size: 22px;
+  color: #555;
+  width: 60%;
+  margin: 0 auto;
+  margin-top: -4px;
+}
+
+.desc {
+  flex-direction: column;
+  margin: 0 auto;
+  font-size: 15px;
+  margin-bottom: 20px;
+  margin-top: 3vh;
+  width: 50%;
+}
+
+.btn-primary {
+  background: #000000;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.btn-primary:hover {
+  background: #646464;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  border: 1px solid rgb(226, 226, 226);
+  padding: 18px;
+  padding-top: 30px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  width: 400px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.card-username {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.card-snippet {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.btn-div {
+  display: flex;
+}
+
+button.btn-open,
+button.btn-copy {
+  padding: 12px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  width: 47%;
+  margin: 0 auto;
+  margin-bottom: 10px;
+}
+
+.btn-open {
+  background-image: linear-gradient(
+    45deg,
+    rgb(245, 133, 41),
+    rgb(221, 42, 123),
+    rgb(129, 52, 175),
+    rgb(81, 91, 212)
+  );
+  color: white;
+  margin-right: 10px;
+}
+
+.btn-copy {
+  transition: all 0.25s ease;
+  background-color: black;
+  color: white;
+}
+
+.btn-copy.copied {
+  transform: scale(1.05);
+}
+
+.btn-copy:not(.copied):active {
+  transform: scale(0.96);
+}
+
+#results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-box {
+  display: flex;
+  gap: 10px;
+  max-width: 70%;
+  margin: 0 auto;
+  margin-top: 3vh;
+}
+
+.search-box input {
+  flex: 1;
+  padding: 12px 14px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-box input:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+.btn-search {
+  padding: 10px 16px;
+  background: #000000;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-search:hover {
+  background: #3d3d3d;
+}

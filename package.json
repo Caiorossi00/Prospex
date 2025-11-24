@@ -9,5 +9,17 @@
   "dependencies": {
     "dotenv": "^17.2.3",
     "playwright": "^1.56.1"
-  }
+  },
+  "description": "**Gerador automático de potenciais clientes usando Playwright + Chrome real**",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Caiorossi00/Business-scraper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Caiorossi00/Business-scraper/issues"
+  },
+  "homepage": "https://github.com/Caiorossi00/Business-scraper#readme"
 }

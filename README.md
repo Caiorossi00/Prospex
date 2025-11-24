@@ -3,6 +3,11 @@
 
 Este projeto é uma ferramenta para encontrar potenciais clientes no Instagram a partir de buscas do Google. Ele automatiza a navegação como se fosse um usuário real, coleta resultados das páginas do Google e extrai perfis do Instagram relacionados à pesquisa desejada.
 
+<p align="center">
+  <img src="https://github.com/Caiorossi00/Business-scraper/blob/main/UI.png?raw=true" 
+       alt="UI Preview"
+       width="700">
+</p>
 ---
 
 ## O que esta aplicação faz?

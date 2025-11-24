@@ -1,13 +1,16 @@
 # Scraper de Leads via Google + Instagram  
 **Gerador automático de potenciais clientes usando Playwright + Chrome real**
+Este projeto é um catalisador de oportunidades para desenvolvedores freelancers.
+Ele permite identificar rapidamente negócios locais e profissionais que dependem fortemente do Instagram, potenciais clientes perfeitos para serviços como sites, landing pages, branding, automações e consultorias.
 
-Este projeto é uma ferramenta para encontrar potenciais clientes no Instagram a partir de buscas do Google. Ele automatiza a navegação como se fosse um usuário real, coleta resultados das páginas do Google e extrai perfis do Instagram relacionados à pesquisa desejada.
+A ferramenta automatiza buscas do Google simulando um usuário real, navega entre várias páginas da SERP e extrai perfis do Instagram relevantes, transformando o processo lento de prospecção manual em uma fonte automatizada de leads qualificados.
 
 <p align="center">
   <img src="https://github.com/Caiorossi00/Business-scraper/blob/main/UI.png?raw=true" 
        alt="UI Preview"
        width="700">
 </p>
+
 ---
 
 ## O que esta aplicação faz?

@@ -1,0 +1,13 @@
+{
+  "type": "module",
+  "name": "scrapper",
+  "version": "1.0.0",
+  "main": "scrape.js",
+  "scripts": {
+    "scrape": "node scrape.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "playwright": "^1.56.1"
+  }
+}

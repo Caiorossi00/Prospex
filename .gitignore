@@ -1,0 +1,6 @@
+.env
+human-session/
+session/
+output.json
+output.csv
+node_modules/

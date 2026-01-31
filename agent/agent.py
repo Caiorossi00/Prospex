@@ -7,32 +7,43 @@ INPUT_FILE = "../scraper/output.json"
 OUTPUT_JSON = "../output/leads_qualified.json"
 OUTPUT_CSV = "../output/leads_qualified.csv"
 
-def is_instagram_link(link: str) -> bool:
-    """Verifica se é link do Instagram"""
-    return "instagram.com" in link.lower()
-
-def has_website(lead: dict) -> bool:
-    """Verifica se o lead parece ter site próprio"""
-    snippet = lead.get("snippet", "").lower()
-    if not is_instagram_link(lead.get("link", "")):
-        return True
-    if any(x in snippet for x in ["www.", ".com", ".br"]):
-        return True
-    return False
-
-def generate_potential_text(lead: dict) -> str:
-    """Usa o LLM para criar uma frase de potencial do cliente"""
+def generate_lead_insights(lead: dict) -> dict:
+    """
+    Gera análise do perfil do cliente e duas sugestões de abordagem
+    focadas em oferta de serviços digitais.
+    """
     prompt = f"""
-Analise este perfil de Instagram:
+Você é um agente de prospecção digital. Seu objetivo é analisar perfis de Instagram
+para **oferecer serviços digitais** como site, landing page ou automação, de forma objetiva,
+profissional e amigável. Não invente serviços que o cliente não oferece e evite comentários sobre posts ou hashtags.
+
+Analise este perfil:
 
 Nome: {lead.get('title')}
-Descrição: {lead.get('snippet')}
+Descrição do perfil: {lead.get('snippet')}
 
-Escreva UMA frase curta descrevendo o potencial desse cliente para contratar serviços como site, landing page ou automação.
-Responda apenas a frase.
+1. Escreva um resumo conciso do perfil (profile_analysis) destacando o potencial do cliente
+   para contratar serviços digitais. Em português.
+2. Crie DUAS formas curtas e realistas de abordagem (approach_1 e approach_2), em português,
+   para oferecer serviços digitais, com tom natural, amigável e direto.
+
+Responda **somente** em JSON neste formato:
+{{
+  "profile_analysis": "...",
+  "approach_1": "...",
+  "approach_2": "..."
+}}
+
+Exemplos de abordagem para referência:
+- approach_1: "Olá! Notei que seu negócio não possui um site. Podemos criar uma página simples para atrair mais clientes. Quer conversar sobre isso?"
+- approach_2: "Oi! Vi seu perfil e acredito que uma landing page poderia facilitar agendamentos e aumentar vendas. Posso te mostrar como funciona."
 """
     response = ask_llm(prompt)
-    return response.strip() if response else ""
+    try:
+        return json.loads(response)
+    except Exception as e:
+        print(f"Erro ao processar lead '{lead.get('title')}': {e}")
+        return {"profile_analysis": "", "approach_1": "", "approach_2": ""}
 
 def main():
     if not os.path.exists(INPUT_FILE):
@@ -42,29 +53,24 @@ def main():
     with open(INPUT_FILE, "r", encoding="utf-8") as f:
         leads = json.load(f)
 
-    qualified = []
+    enhanced_leads = []
     for lead in leads:
-        if not is_instagram_link(lead.get("link", "")):
-            continue
-        if has_website(lead):
-            continue
-
-        lead["potential_text"] = generate_potential_text(lead)
-        qualified.append(lead)
-
-    print(f"Leads qualificados: {len(qualified)}")
+        print(f"Analisando: {lead.get('title')}")
+        insights = generate_lead_insights(lead)
+        lead.update(insights)
+        enhanced_leads.append(lead)
 
     os.makedirs(os.path.dirname(OUTPUT_JSON), exist_ok=True)
     with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(qualified, f, ensure_ascii=False, indent=2)
+        json.dump(enhanced_leads, f, ensure_ascii=False, indent=2)
 
-    if qualified:
-        df = pd.DataFrame(qualified)
+    if enhanced_leads:
+        df = pd.DataFrame(enhanced_leads)
         df.to_csv(OUTPUT_CSV, index=False)
         print(f"CSV salvo em: {OUTPUT_CSV}")
 
     print(f"JSON salvo em: {OUTPUT_JSON}")
+    print(f"Leads processados: {len(enhanced_leads)}")
 
 if __name__ == "__main__":
     main()
-

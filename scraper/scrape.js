@@ -39,7 +39,7 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
       "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
   });
 
-  const query = "designer são caetano instagram";
+  const query = "designer são caetano instagram"; // ajuste sua query
   const results = [];
 
   console.log("Iniciando scraping...\n");
@@ -47,15 +47,20 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
   for (let pageIndex = 0; pageIndex < 3; pageIndex++) {
     const start = pageIndex * 10;
     const url = `https://www.google.com/search?q=${encodeURIComponent(
-      query
+      query,
     )}&start=${start}`;
 
     console.log(`📄 Página ${pageIndex + 1}: ${url}`);
 
     await page.goto(url, { waitUntil: "domcontentloaded" });
 
-    // Aguarda resultados
-    await page.waitForSelector(".tF2Cxc", { timeout: 10000 });
+    try {
+      // Aguarda resultados
+      await page.waitForSelector(".tF2Cxc", { timeout: 10000 });
+    } catch {
+      console.log("Nenhum resultado encontrado nesta página.");
+      continue;
+    }
 
     // Delay humano
     await delay(1000 + Math.random() * 1500);
@@ -71,16 +76,23 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
         let username = raw.includes("·") ? raw.split("·")[1].trim() : "";
 
         return { title, link, username, snippet };
-      })
+      }),
     );
 
-    results.push(...items);
+    // Filtro: apenas links do Instagram
+    const filtered = items.filter((r) => r.link.includes("instagram.com"));
+
+    results.push(...filtered);
   }
 
-  console.log(`\nDone! ${results.length} resultados coletados.`);
+  console.log(
+    `\nDone! ${results.length} resultados filtrados (Instagram apenas).`,
+  );
 
-  fs.writeFileSync("output.json", JSON.stringify(results, null, 2));
+  // Salva JSON
+  fs.writeFileSync("./output.json", JSON.stringify(results, null, 2), "utf-8");
 
+  // Salva CSV
   const csv = [
     "title,link,username,snippet",
     ...results.map(
@@ -88,12 +100,14 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
         `"${r.title.replace(/"/g, "'")}",` +
         `"${r.link}",` +
         `"${r.username}",` +
-        `"${r.snippet.replace(/"/g, "'")}"`
+        `"${r.snippet.replace(/"/g, "'")}"`,
     ),
   ].join("\n");
 
-  fs.writeFileSync("output.csv", csv);
+  fs.writeFileSync("./output.csv", csv, "utf-8");
 
-  console.log("→ output.json");
-  console.log("→ output.csv");
+  console.log("→ output.json salvo");
+  console.log("→ output.csv salvo");
+
+  await browser.close();
 })();

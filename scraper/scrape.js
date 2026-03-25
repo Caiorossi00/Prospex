@@ -1,8 +1,7 @@
 import { chromium } from "playwright";
 import fs from "fs";
 import dotenv from "dotenv";
-import { QUERY } from "./query.js";
-
+import { QUERIES } from "./query.js";
 dotenv.config();
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -10,6 +9,11 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 (async () => {
   const CHROME_PATH = process.env.CHROME_PATH;
   const PROFILE = process.env.PLAYWRIGHT_PROFILE || "human-session";
+  const MAX_PAGES = parseInt(process.env.MAX_PAGES || "1", 10);
+  const DELAY_BETWEEN_QUERIES = parseInt(
+    process.env.DELAY_BETWEEN_QUERIES || "6000",
+    10
+  );
 
   if (!CHROME_PATH) {
     console.error("ERRO: Defina CHROME_PATH no arquivo .env");
@@ -37,48 +41,58 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
   });
 
   const results = [];
+  console.log(`Iniciando scraping...`);
+  console.log(`→ ${QUERIES.length} queries | ${MAX_PAGES} página(s) cada\n`);
 
-  console.log("Iniciando scraping...\n");
+  for (let qi = 0; qi < QUERIES.length; qi++) {
+    const query = QUERIES[qi];
+    console.log(`\n🔍 Query ${qi + 1}/${QUERIES.length}: "${query}"`);
 
-  for (let pageIndex = 0; pageIndex < 1; pageIndex++) {
-    const start = pageIndex * 5;
-    const url = `https://www.google.com/search?q=${encodeURIComponent(
-      QUERY,
-    )}&start=${start}`;
+    for (let pageIndex = 0; pageIndex < MAX_PAGES; pageIndex++) {
+      const start = pageIndex * 10;
+      const url = `https://www.google.com/search?q=${encodeURIComponent(
+        query
+      )}&start=${start}`;
+      console.log(`  📄 Página ${pageIndex + 1}: ${url}`);
 
-    console.log(`📄 Página ${pageIndex + 1}: ${url}`);
+      await page.goto(url, { waitUntil: "domcontentloaded" });
 
-    await page.goto(url, { waitUntil: "domcontentloaded" });
+      try {
+        await page.waitForSelector(".tF2Cxc", { timeout: 10000 });
+      } catch {
+        console.log("  ⚠️  Nenhum resultado encontrado nesta página.");
+        continue;
+      }
 
-    try {
-      await page.waitForSelector(".tF2Cxc", { timeout: 10000 });
-    } catch {
-      console.log("Nenhum resultado encontrado nesta página.");
-      continue;
+      await delay(1000 + Math.random() * 1500);
+
+      const items = await page.$$eval(".tF2Cxc", (nodes) =>
+        nodes.map((n) => {
+          const link = n.querySelector("a.zReHs")?.href || "";
+          const title = n.querySelector("h3.LC20lb")?.innerText || "";
+          const snippet = n.querySelector("div.VwiC3b")?.innerText || "";
+          const raw = n.querySelector("span.VuuXrf")?.innerText || "";
+          let username = raw.includes("·") ? raw.split("·")[1].trim() : "";
+          return { title, link, username, snippet };
+        })
+      );
+
+      const filtered = items.filter((r) => r.link.includes("instagram.com"));
+      console.log(`  ✓ ${filtered.length} perfis Instagram encontrados`);
+      results.push(...filtered);
     }
 
-    await delay(1000 + Math.random() * 1500);
-
-    const items = await page.$$eval(".tF2Cxc", (nodes) =>
-      nodes.map((n) => {
-        const link = n.querySelector("a.zReHs")?.href || "";
-        const title = n.querySelector("h3.LC20lb")?.innerText || "";
-        const snippet = n.querySelector("div.VwiC3b")?.innerText || "";
-
-        const raw = n.querySelector("span.VuuXrf")?.innerText || "";
-        let username = raw.includes("·") ? raw.split("·")[1].trim() : "";
-
-        return { title, link, username, snippet };
-      }),
-    );
-
-    const filtered = items.filter((r) => r.link.includes("instagram.com"));
-
-    results.push(...filtered);
+    if (qi < QUERIES.length - 1) {
+      const wait = DELAY_BETWEEN_QUERIES + Math.random() * 3000;
+      console.log(
+        `\n⏳ Aguardando ${(wait / 1000).toFixed(1)}s antes da próxima query...`
+      );
+      await delay(wait);
+    }
   }
 
   console.log(
-    `\nDone! ${results.length} resultados filtrados (Instagram apenas).`,
+    `\nDone! ${results.length} resultados filtrados (Instagram apenas).`
   );
 
   fs.writeFileSync("./output.json", JSON.stringify(results, null, 2), "utf-8");
@@ -90,12 +104,11 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
         `"${r.title.replace(/"/g, "'")}",` +
         `"${r.link}",` +
         `"${r.username}",` +
-        `"${r.snippet.replace(/"/g, "'")}"`,
+        `"${r.snippet.replace(/"/g, "'")}"`
     ),
   ].join("\n");
 
   fs.writeFileSync("./output.csv", csv, "utf-8");
-
   console.log("→ output.json salvo");
   console.log("→ output.csv salvo");
 

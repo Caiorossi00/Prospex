@@ -41,6 +41,9 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
   });
 
   const results = [];
+  const seenUrls = new Set();
+  let totalDuplicates = 0;
+
   console.log(`Iniciando scraping...`);
   console.log(`→ ${QUERIES.length} queries | ${MAX_PAGES} página(s) cada\n`);
 
@@ -77,9 +80,25 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
         })
       );
 
-      const filtered = items.filter((r) => r.link.includes("instagram.com"));
-      console.log(`  ✓ ${filtered.length} perfis Instagram encontrados`);
-      results.push(...filtered);
+      const instagramItems = items.filter((r) =>
+        r.link.includes("instagram.com")
+      );
+
+      let newCount = 0;
+      let dupCount = 0;
+
+      for (const item of instagramItems) {
+        if (seenUrls.has(item.link)) {
+          dupCount++;
+          totalDuplicates++;
+        } else {
+          seenUrls.add(item.link);
+          results.push(item);
+          newCount++;
+        }
+      }
+
+      console.log(`  ✓ ${newCount} novos | ${dupCount} duplicados ignorados`);
     }
 
     if (qi < QUERIES.length - 1) {
@@ -91,9 +110,9 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
     }
   }
 
-  console.log(
-    `\nDone! ${results.length} resultados filtrados (Instagram apenas).`
-  );
+  console.log(`\nDone!`);
+  console.log(`→ ${results.length} leads únicos`);
+  console.log(`→ ${totalDuplicates} duplicados ignorados no total`);
 
   fs.writeFileSync("./output.json", JSON.stringify(results, null, 2), "utf-8");
 

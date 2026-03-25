@@ -6,6 +6,11 @@ dotenv.config();
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
+function extractFollowers(snippet) {
+  const match = snippet.match(/([\d,.]+[KkMm]?)\+?\s*followers/i);
+  return match ? match[1] : null;
+}
+
 (async () => {
   const CHROME_PATH = process.env.CHROME_PATH;
   const PROFILE = process.env.PLAYWRIGHT_PROFILE || "human-session";
@@ -93,7 +98,11 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
           totalDuplicates++;
         } else {
           seenUrls.add(item.link);
-          results.push(item);
+          results.push({
+            ...item,
+            followers: extractFollowers(item.snippet),
+            query_origin: query,
+          });
           newCount++;
         }
       }
@@ -117,13 +126,15 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
   fs.writeFileSync("./output.json", JSON.stringify(results, null, 2), "utf-8");
 
   const csv = [
-    "title,link,username,snippet",
+    "title,link,username,snippet,followers,query_origin",
     ...results.map(
       (r) =>
         `"${r.title.replace(/"/g, "'")}",` +
         `"${r.link}",` +
         `"${r.username}",` +
-        `"${r.snippet.replace(/"/g, "'")}"`
+        `"${r.snippet.replace(/"/g, "'")}",` +
+        `"${r.followers ?? ""}",` +
+        `"${r.query_origin}"`
     ),
   ].join("\n");
 

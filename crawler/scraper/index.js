@@ -1,19 +1,16 @@
+// scraper/index.js
 import { chromium } from "playwright";
 import fs from "fs";
 import dotenv from "dotenv";
 import { QUERIES } from "./query.js";
-dotenv.config();
+import { extractFollowers } from "./extractors.js";
+dotenv.config({ path: "../.env" });
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
-function extractFollowers(snippet) {
-  const match = snippet.match(/([\d,.]+[KkMm]?)\+?\s*followers/i);
-  return match ? match[1] : null;
-}
-
 (async () => {
   const CHROME_PATH = process.env.CHROME_PATH;
-  const PROFILE = process.env.PLAYWRIGHT_PROFILE || "human-session";
+  const PROFILE = process.env.PLAYWRIGHT_PROFILE || "profiles/human-session";
   const MAX_PAGES = parseInt(process.env.MAX_PAGES || "1", 10);
   const DELAY_BETWEEN_QUERIES = parseInt(
     process.env.DELAY_BETWEEN_QUERIES || "6000",
@@ -25,7 +22,7 @@ function extractFollowers(snippet) {
     process.exit(1);
   }
 
-  const browser = await chromium.launchPersistentContext(`./${PROFILE}`, {
+  const browser = await chromium.launchPersistentContext(`../${PROFILE}`, {
     headless: false,
     executablePath: CHROME_PATH,
     viewport: { width: 1280, height: 900 },
@@ -123,7 +120,11 @@ function extractFollowers(snippet) {
   console.log(`→ ${results.length} leads únicos`);
   console.log(`→ ${totalDuplicates} duplicados ignorados no total`);
 
-  fs.writeFileSync("./output.json", JSON.stringify(results, null, 2), "utf-8");
+  fs.writeFileSync(
+    "../output/output.json",
+    JSON.stringify(results, null, 2),
+    "utf-8"
+  );
 
   const csv = [
     "title,link,username,snippet,followers,query_origin",
@@ -138,9 +139,9 @@ function extractFollowers(snippet) {
     ),
   ].join("\n");
 
-  fs.writeFileSync("./output.csv", csv, "utf-8");
-  console.log("→ output.json salvo");
-  console.log("→ output.csv salvo");
+  fs.writeFileSync("../output/output.csv", csv, "utf-8");
+  console.log("→ output/output.json salvo");
+  console.log("→ output/output.csv salvo");
 
   await browser.close();
 })();

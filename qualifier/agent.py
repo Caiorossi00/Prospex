@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from ollama_client import ask_llm  
 
-INPUT_FILE = "../scraper/output.json"
+INPUT_FILE = "../crawler/output/output.json"
 OUTPUT_JSON = "../output/leads_qualified.json"
 OUTPUT_CSV = "../output/leads_qualified.csv"
 

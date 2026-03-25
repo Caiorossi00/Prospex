@@ -3,7 +3,7 @@ async function loadResults() {
   container.innerHTML = "<p>Carregando...</p>";
 
   try {
-    const res = await fetch("./output.json");
+    const res = await fetch("../crawler/output/output.json");
     const data = await res.json();
 
     if (!Array.isArray(data) && !Array.isArray(data.results)) {

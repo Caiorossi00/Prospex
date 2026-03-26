@@ -16,8 +16,22 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
   const candidates = isWindows
     ? [
         process.env.CHROME_PATH_WINDOWS,
-        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-        "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+        path.join(
+          "C:",
+          "Program Files",
+          "Google",
+          "Chrome",
+          "Application",
+          "chrome.exe",
+        ),
+        path.join(
+          "C:",
+          "Program Files (x86)",
+          "Google",
+          "Chrome",
+          "Application",
+          "chrome.exe",
+        ),
       ]
     : [
         process.env.CHROME_PATH_LINUX,
@@ -26,6 +40,12 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
       ];
 
   const CHROME_PATH = candidates.find((p) => p && fs.existsSync(p));
+
+  if (!CHROME_PATH) {
+    console.error("ERRO: nenhum executável do Chrome encontrado.");
+    console.error("Defina CHROME_PATH_WINDOWS ou CHROME_PATH_LINUX no .env");
+    process.exit(1);
+  }
 
   const PROFILE = process.env.PLAYWRIGHT_PROFILE || "profiles/human-session";
   const MAX_PAGES = parseInt(process.env.MAX_PAGES || "1", 10);

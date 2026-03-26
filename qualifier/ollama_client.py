@@ -1,18 +1,17 @@
 import requests
 
 def ask_llm(prompt: str) -> str:
-    """
-    Envia um prompt para o modelo Mistral rodando localmente via Ollama.
-    Retorna a resposta do LLM.
-    """
-    url = "http://localhost:11434/api/generate"  
-
+    url = "http://localhost:11434/api/generate"
     payload = {
-        "model": "mistral",
+        "model": "phi3:mini",
         "prompt": prompt,
-        "stream": False
+        "stream": False,
+        "options": {
+            "num_predict": 600,
+            "temperature": 0.3,
+            "top_p": 0.9
+        }
     }
-
     try:
         response = requests.post(url, json=payload)
         response.raise_for_status()

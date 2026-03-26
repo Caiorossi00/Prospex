@@ -1,49 +1,56 @@
 import json
 import os
 import pandas as pd
-from ollama_client import ask_llm  
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from ollama_client import ask_llm
 
 INPUT_FILE = "../crawler/output/output.json"
 OUTPUT_JSON = "../output/leads_qualified.json"
 OUTPUT_CSV = "../output/leads_qualified.csv"
+MAX_WORKERS = 4
 
 def generate_lead_insights(lead: dict) -> dict:
-    """
-    Gera análise do perfil do cliente e duas sugestões de abordagem
-    focadas em oferta de serviços digitais.
-    """
     prompt = f"""
-Você é um agente de prospecção digital. Seu objetivo é analisar perfis de Instagram
-para **oferecer serviços digitais** como site, landing page ou automação, de forma objetiva,
-profissional e amigável. Não invente serviços que o cliente não oferece e evite comentários sobre posts ou hashtags.
-
-Analise este perfil:
-
+Responda SOMENTE com um objeto JSON plano, sem objetos aninhados, sem texto antes ou depois, sem markdown.
+Cada valor deve ser uma string simples.
+Perfil:
 Nome: {lead.get('title')}
-Descrição do perfil: {lead.get('snippet')}
-
-1. Escreva um resumo conciso do perfil (profile_analysis) destacando o potencial do cliente
-   para contratar serviços digitais. Em português.
-2. Crie DUAS formas curtas e realistas de abordagem (approach_1 e approach_2), em português,
-   para oferecer serviços digitais, com tom natural, amigável e direto.
-
-Responda **somente** em JSON neste formato:
+Descrição: {lead.get('snippet')}
+Seguidores: {lead.get('followers')}
+Formato obrigatório:
 {{
-  "profile_analysis": "...",
-  "approach_1": "...",
-  "approach_2": "..."
+  "diagnosis": "string simples aqui",
+  "opportunity": "string simples aqui",
+  "offer_angle": "string simples aqui"
 }}
-
-Exemplos de abordagem para referência:
-- approach_1: "Olá! Notei que seu negócio não possui um site. Podemos criar uma página simples para atrair mais clientes. Quer conversar sobre isso?"
-- approach_2: "Oi! Vi seu perfil e acredito que uma landing page poderia facilitar agendamentos e aumentar vendas. Posso te mostrar como funciona."
 """
     response = ask_llm(prompt)
     try:
-        return json.loads(response)
-    except Exception as e:
-        print(f"Erro ao processar lead '{lead.get('title')}': {e}")
-        return {"profile_analysis": "", "approach_1": "", "approach_2": ""}
+        clean = response.strip()
+        if "```" in clean:
+            clean = clean.split("```")[1]
+            if clean.startswith("json"):
+                clean = clean[4:]
+        clean = clean.strip()
+        return json.loads(clean)
+    except Exception:
+        return {
+            "diagnosis": "",
+            "opportunity": "",
+            "offer_angle": ""
+        }
+
+def process_lead(lead: dict) -> dict:
+    print(f"Analisando: {lead.get('username')}")
+    insights = generate_lead_insights(lead)
+    return {
+        "username": lead.get("username"),
+        "followers": lead.get("followers"),
+        "query_origin": lead.get("query_origin"),
+        "diagnosis": insights.get("diagnosis"),
+        "opportunity": insights.get("opportunity"),
+        "offer_angle": insights.get("offer_angle"),
+    }
 
 def main():
     if not os.path.exists(INPUT_FILE):
@@ -53,23 +60,30 @@ def main():
     with open(INPUT_FILE, "r", encoding="utf-8") as f:
         leads = json.load(f)
 
-    enhanced_leads = []
-    for lead in leads:
-        print(f"Analisando: {lead.get('title')}")
-        insights = generate_lead_insights(lead)
-        lead.update(insights)
-        enhanced_leads.append(lead)
+    enhanced_leads = [None] * len(leads)
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = {executor.submit(process_lead, lead): i for i, lead in enumerate(leads)}
+        for future in as_completed(futures):
+            i = futures[future]
+            try:
+                enhanced_leads[i] = future.result()
+            except Exception:
+                enhanced_leads[i] = leads[i]
+
+    enhanced_leads = [l for l in enhanced_leads if l is not None]
 
     os.makedirs(os.path.dirname(OUTPUT_JSON), exist_ok=True)
+
     with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
         json.dump(enhanced_leads, f, ensure_ascii=False, indent=2)
 
     if enhanced_leads:
         df = pd.DataFrame(enhanced_leads)
         df.to_csv(OUTPUT_CSV, index=False)
-        print(f"CSV salvo em: {OUTPUT_CSV}")
 
     print(f"JSON salvo em: {OUTPUT_JSON}")
+    print(f"CSV salvo em: {OUTPUT_CSV}")
     print(f"Leads processados: {len(enhanced_leads)}")
 
 if __name__ == "__main__":

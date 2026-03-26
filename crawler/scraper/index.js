@@ -1,26 +1,38 @@
-// scraper/index.js
 import { chromium } from "playwright";
 import fs from "fs";
 import dotenv from "dotenv";
+import os from "os";
+import path from "path";
 import { QUERIES } from "./query.js";
 import { extractFollowers } from "./extractors.js";
+
 dotenv.config({ path: "../.env" });
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
 (async () => {
-  const CHROME_PATH = process.env.CHROME_PATH;
+  const isWindows = os.platform() === "win32";
+
+  const candidates = isWindows
+    ? [
+        process.env.CHROME_PATH_WINDOWS,
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+      ]
+    : [
+        process.env.CHROME_PATH_LINUX,
+        "/usr/bin/chromium",
+        "/usr/bin/google-chrome",
+      ];
+
+  const CHROME_PATH = candidates.find((p) => p && fs.existsSync(p));
+
   const PROFILE = process.env.PLAYWRIGHT_PROFILE || "profiles/human-session";
   const MAX_PAGES = parseInt(process.env.MAX_PAGES || "1", 10);
   const DELAY_BETWEEN_QUERIES = parseInt(
     process.env.DELAY_BETWEEN_QUERIES || "6000",
-    10
+    10,
   );
-
-  if (!CHROME_PATH) {
-    console.error("ERRO: Defina CHROME_PATH no arquivo .env");
-    process.exit(1);
-  }
 
   const browser = await chromium.launchPersistentContext(`../${PROFILE}`, {
     headless: false,
@@ -34,12 +46,14 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
   });
 
   const page = await browser.newPage();
+
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "webdriver", { get: () => false });
   });
+
   await page.setExtraHTTPHeaders({
     "User-Agent":
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
   });
 
   const results = [];
@@ -55,9 +69,11 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
     for (let pageIndex = 0; pageIndex < MAX_PAGES; pageIndex++) {
       const start = pageIndex * 10;
+
       const url = `https://www.google.com/search?q=${encodeURIComponent(
-        query
+        query,
       )}&start=${start}`;
+
       console.log(`  📄 Página ${pageIndex + 1}: ${url}`);
 
       await page.goto(url, { waitUntil: "domcontentloaded" });
@@ -79,11 +95,11 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
           const raw = n.querySelector("span.VuuXrf")?.innerText || "";
           let username = raw.includes("·") ? raw.split("·")[1].trim() : "";
           return { title, link, username, snippet };
-        })
+        }),
       );
 
       const instagramItems = items.filter((r) =>
-        r.link.includes("instagram.com")
+        r.link.includes("instagram.com"),
       );
 
       let newCount = 0;
@@ -109,9 +125,11 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
     if (qi < QUERIES.length - 1) {
       const wait = DELAY_BETWEEN_QUERIES + Math.random() * 3000;
+
       console.log(
-        `\n⏳ Aguardando ${(wait / 1000).toFixed(1)}s antes da próxima query...`
+        `\n⏳ Aguardando ${(wait / 1000).toFixed(1)}s antes da próxima query...`,
       );
+
       await delay(wait);
     }
   }
@@ -120,10 +138,13 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
   console.log(`→ ${results.length} leads únicos`);
   console.log(`→ ${totalDuplicates} duplicados ignorados no total`);
 
+  const outputDir = path.resolve("../output");
+  fs.mkdirSync(outputDir, { recursive: true });
+
   fs.writeFileSync(
-    "../output/output.json",
+    path.join(outputDir, "output.json"),
     JSON.stringify(results, null, 2),
-    "utf-8"
+    "utf-8",
   );
 
   const csv = [
@@ -135,11 +156,12 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms));
         `"${r.username}",` +
         `"${r.snippet.replace(/"/g, "'")}",` +
         `"${r.followers ?? ""}",` +
-        `"${r.query_origin}"`
+        `"${r.query_origin}"`,
     ),
   ].join("\n");
 
-  fs.writeFileSync("../output/output.csv", csv, "utf-8");
+  fs.writeFileSync(path.join(outputDir, "output.csv"), csv, "utf-8");
+
   console.log("→ output/output.json salvo");
   console.log("→ output/output.csv salvo");
 

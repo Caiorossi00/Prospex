@@ -1,47 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <title>Resultados do Scraper</title>
-
+    <title>Prospex</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
       rel="stylesheet"
     />
-
     <link rel="stylesheet" href="style.css" />
   </head>
-
   <body>
     <header class="hero">
-      <h1>Scraper</h1>
+      <h1>Prospex</h1>
       <p class="sub">
-        Encontre rapidamente perfis reais do Instagram filtrados por cidade e
-        profissão.
+        Perfis qualificados com diagnóstico comercial gerado por IA.
       </p>
-
-      <div class="search-box">
-        <input
-          id="searchInput"
-          type="text"
-          placeholder="Digite sua busca ex: profissão + cidade + instagram"
-        />
-        <button class="btn-search">></button>
-      </div>
-
       <p class="desc">
-        Clique para carregar o arquivo <b>output.json</b> gerado pelo scraper e
-        visualize apenas perfis válidos, com username e link direto.
+        Carregue o arquivo <b>leads_qualified.json</b> para visualizar os leads
+        analisados.
       </p>
       <button class="btn-primary" onclick="loadResults()">
-        Carregar resultados
+        Carregar leads
       </button>
     </header>
-
     <div id="results"></div>
-
     <script src="script.js"></script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-# Prospex — Gerador Automático de Leads Qualificados por IA
+# Prospex - Gerador Automático de Leads Qualificados por IA
 
 **Crawling + Qualificação por IA + Dashboard visual para prospecção de clientes no Instagram**
 
@@ -6,11 +6,16 @@ O Prospex é uma ferramenta completa de prospecção automatizada para freelance
 
 Ele rastreia perfis reais do Instagram via Google, qualifica cada lead com um diagnóstico comercial gerado por IA local e exibe tudo em um dashboard visual — pronto para abordagem.
 
-<p align="center">
-  <img src="./dashboard/UI.png/" alt="UI Preview" width="700">
-</p>
 
 ---
+
+<div align="center">
+  <h3>Prévia da UI</h3>
+  <img src="./dashboard/UI.png" alt="UI Preview" width="700">
+</div>
+
+---
+<br>
 
 ## Como funciona
 
@@ -26,7 +31,6 @@ crawler → qualifier → dashboard
 
 **3. Dashboard** — interface visual que carrega os leads qualificados, exibe o diagnóstico da IA por card, permite abrir o Instagram diretamente e marcar perfis como abordados com persistência local.
 
----
 
 ## O que o Crawler extrai
 
@@ -39,7 +43,6 @@ Para cada perfil encontrado:
 - `followers` — número de seguidores (quando disponível)
 - `query_origin` — qual busca gerou aquele lead
 
----
 
 ## O que o Qualifier gera
 
@@ -50,8 +53,6 @@ Para cada lead, a IA produz:
 - `offer_angle` — qual tipo de solução faz sentido oferecer
 
 O modelo roda 100% local via Ollama — sem custo por chamada, sem dependência de API externa.
-
----
 
 ## Para que serve
 
@@ -64,7 +65,6 @@ Ideal para quem precisa encontrar clientes para serviços como:
 
 Basta ajustar as queries para qualquer nicho e cidade — o pipeline faz o resto.
 
----
 
 ## Comportamento anti-detecção
 
@@ -75,10 +75,10 @@ O crawler usa:
 - Delays aleatórios entre páginas e queries
 - Remoção do `navigator.webdriver`
 
----
 
 ## Performance
 
 - Crawler: ~10 leads por página, múltiplas queries em paralelo
 - Qualifier: ~12 segundos por lead com `phi3:mini` rodando local, 4 workers paralelos
-- 50 leads qualificados em aproximadamente 10 minutos
+- 400 leads em aproximadamente 5 minutos
+- 50 qualificações de lead em aproximadamente 8 minutos

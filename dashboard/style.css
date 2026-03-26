@@ -2,26 +2,39 @@
   font-family: "Inter", sans-serif;
   box-sizing: border-box;
 }
+
 body {
   padding: 20px;
   text-align: center;
 }
+
 .hero {
   margin-bottom: 30px;
 }
+
+.hero img {
+  width: 160px;
+  height: auto;
+}
+
 h1 {
+  font-family: "Orbitron", sans-serif;
   font-size: 36px;
   font-weight: 700;
-  letter-spacing: -1.5px;
   margin-bottom: 10px;
+  margin-top: -28px;
 }
+
 .sub {
   font-size: 22px;
   color: #555;
   width: 60%;
   margin: 0 auto;
   margin-top: -4px;
+  font-family: "Orbitron", sans-serif;
+  margin-bottom: 30px;
 }
+
 .desc {
   margin: 0 auto;
   font-size: 15px;
@@ -29,6 +42,7 @@ h1 {
   margin-top: 3vh;
   width: 50%;
 }
+
 .btn-primary {
   background: #000000;
   color: white;
@@ -38,10 +52,13 @@ h1 {
   cursor: pointer;
   font-size: 15px;
   font-family: inherit;
+  font-family: "orbitron";
 }
+
 .btn-primary:hover {
   background: #646464;
 }
+
 #results {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
@@ -50,6 +67,7 @@ h1 {
   margin-top: 20px;
   text-align: left;
 }
+
 .card {
   display: flex;
   flex-direction: column;
@@ -60,21 +78,25 @@ h1 {
     opacity 0.2s ease,
     background 0.2s ease;
 }
+
 .card.approached {
   background-color: #f6fff6;
   border-color: #a8e6a8;
   opacity: 0.75;
 }
+
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 4px;
 }
+
 .card-username {
   font-size: 18px;
   font-weight: 700;
 }
+
 .check-btn {
   display: flex;
   align-items: center;
@@ -91,20 +113,24 @@ h1 {
   white-space: nowrap;
   margin-bottom: 10px;
 }
+
 .check-btn:hover {
   border-color: #888;
   color: #000;
 }
+
 .check-btn.checked {
   background-color: #e6f9e6;
   border-color: #5cb85c;
   color: #2d7a2d;
 }
+
 .card-followers {
   font-size: 13px;
   color: #888;
   margin-bottom: 16px;
 }
+
 .card-label {
   font-size: 11px;
   font-weight: 600;
@@ -114,16 +140,19 @@ h1 {
   margin-bottom: 4px;
   margin-top: 12px;
 }
+
 .card-text {
   font-size: 13px;
   color: #333;
   line-height: 1.5;
 }
+
 .btn-div {
   display: flex;
   gap: 8px;
   margin-top: 20px;
 }
+
 button.btn-open,
 button.btn-copy {
   padding: 12px 14px;
@@ -134,6 +163,7 @@ button.btn-copy {
   flex: 1;
   font-family: inherit;
 }
+
 .btn-open {
   background-image: linear-gradient(
     45deg,
@@ -144,14 +174,17 @@ button.btn-copy {
   );
   color: white;
 }
+
 .btn-copy {
   transition: all 0.25s ease;
   background-color: black;
   color: white;
 }
+
 .btn-copy.copied {
   transform: scale(1.05);
 }
+
 .btn-copy:not(.copied):active {
   transform: scale(0.96);
 }

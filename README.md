@@ -1,20 +1,22 @@
 # Prospex - Gerador Automático de Leads Qualificados por IA
 
+<img src="./dashboard/assets/banner.png" alt="Prospex Banner">
+
 **Crawling + Qualificação por IA + Dashboard visual para prospecção de clientes no Instagram**
 
 O Prospex é uma ferramenta completa de prospecção automatizada para freelancers, agências e consultores digitais.
 
 Ele rastreia perfis reais do Instagram via Google, qualifica cada lead com um diagnóstico comercial gerado por IA local e exibe tudo em um dashboard visual — pronto para abordagem.
 
-
 ---
 
 <div align="center">
   <h3>Prévia da UI</h3>
-  <img src="./dashboard/UI.png" alt="UI Preview" width="700">
+  <img src="./dashboard/assets/UI.png" alt="UI Preview" width="700">
 </div>
 
 ---
+
 <br>
 
 ## Como funciona
@@ -31,7 +33,6 @@ crawler → qualifier → dashboard
 
 **3. Dashboard** — interface visual que carrega os leads qualificados, exibe o diagnóstico da IA por card, permite abrir o Instagram diretamente e marcar perfis como abordados com persistência local.
 
-
 ## O que o Crawler extrai
 
 Para cada perfil encontrado:
@@ -42,7 +43,6 @@ Para cada perfil encontrado:
 - `snippet` — descrição indexada pelo Google
 - `followers` — número de seguidores (quando disponível)
 - `query_origin` — qual busca gerou aquele lead
-
 
 ## O que o Qualifier gera
 
@@ -65,7 +65,6 @@ Ideal para quem precisa encontrar clientes para serviços como:
 
 Basta ajustar as queries para qualquer nicho e cidade — o pipeline faz o resto.
 
-
 ## Comportamento anti-detecção
 
 O crawler usa:
@@ -74,7 +73,6 @@ O crawler usa:
 - User-Agent humano
 - Delays aleatórios entre páginas e queries
 - Remoção do `navigator.webdriver`
-
 
 ## Performance
 

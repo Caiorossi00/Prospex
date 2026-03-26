@@ -1,6 +1,16 @@
-# Prospex - Gerador Automático de Leads Qualificados por IA
+<h1 align="center">Prospex</h1>
 
-<img src="./dashboard/assets/banner.png" alt="Prospex Banner">
+<p align="center">
+  <img src="./dashboard/assets/banner.png" alt="Prospex Banner">
+</p>
+
+---
+
+**Encontre, analise e aborde clientes ideais de forma automatizada com IA**
+
+O Prospex é uma ferramenta completa de prospecção para freelancers, agências e consultores digitais que querem gerar clientes de forma mais eficiente.
+
+Ele automatiza todo o processo: desde a descoberta de perfis relevantes até a análise comercial de cada lead, entregando oportunidades prontas para abordagem.
 
 **Crawling + Qualificação por IA + Dashboard visual para prospecção de clientes no Instagram**
 

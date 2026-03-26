@@ -7,7 +7,7 @@ O Prospex é uma ferramenta completa de prospecção automatizada para freelance
 Ele rastreia perfis reais do Instagram via Google, qualifica cada lead com um diagnóstico comercial gerado por IA local e exibe tudo em um dashboard visual — pronto para abordagem.
 
 <p align="center">
-  <img src="./UI.png" alt="UI Preview" width="700">
+  <img src="./dashboard/UI.png/" alt="UI Preview" width="700">
 </p>
 
 ---

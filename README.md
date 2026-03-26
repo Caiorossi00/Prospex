@@ -1,99 +1,84 @@
-# Scraper de Leads via Google + Instagram  
-**Gerador automático de potenciais clientes usando Playwright + Chrome real**
-Este projeto é um catalisador de oportunidades para desenvolvedores freelancers.
-Ele permite identificar rapidamente negócios locais e profissionais que dependem fortemente do Instagram, potenciais clientes perfeitos para serviços como sites, landing pages, branding, automações e consultorias.
+# Prospex — Gerador Automático de Leads Qualificados por IA
 
-A ferramenta automatiza buscas do Google simulando um usuário real, navega entre várias páginas da SERP e extrai perfis do Instagram relevantes, transformando o processo lento de prospecção manual em uma fonte automatizada de leads qualificados.
+**Crawling + Qualificação por IA + Dashboard visual para prospecção de clientes no Instagram**
+
+O Prospex é uma ferramenta completa de prospecção automatizada para freelancers, agências e consultores digitais.
+
+Ele rastreia perfis reais do Instagram via Google, qualifica cada lead com um diagnóstico comercial gerado por IA local e exibe tudo em um dashboard visual — pronto para abordagem.
 
 <p align="center">
-  <img src="https://github.com/Caiorossi00/Business-scraper/blob/main/UI.png?raw=true" 
-       alt="UI Preview"
-       width="700">
+  <img src="./UI.png" alt="UI Preview" width="700">
 </p>
 
 ---
 
-## O que esta aplicação faz?
+## Como funciona
 
-- Realiza uma busca no Google como um usuário humano real (Chrome autêntico, sem detecção de automação).  
-- Percorre automaticamente várias páginas da SERP (resultados de busca).  
-- Identifica resultados que levam ao Instagram.  
-- Extrai:
-  - **Nome do perfil**
-  - **@username do Instagram**
-  - **Link direto**
-  - **Trecho da descrição**
-- Gera automaticamente um arquivo `.json` e `.csv` com todos os leads encontrados.
+O pipeline é dividido em três módulos independentes:
 
----
+```
+crawler → qualifier → dashboard
+```
 
-## Para que serve?
+**1. Crawler** — busca no Google simulando um usuário humano real, percorre múltiplas páginas da SERP, filtra apenas perfis do Instagram e salva os leads em JSON e CSV.
 
-Ideal para quem quer **encontrar leads rapidamente**, por exemplo:
+**2. Qualifier** — lê os leads coletados e envia cada perfil para um modelo de IA local (via Ollama) que gera um diagnóstico comercial acionável: onde o negócio perde clientes, qual oportunidade existe e qual solução oferecer.
 
-- Psicólogas/os  
-- Nutricionistas  
-- Clínicas  
-- Profissionais liberais em geral  
-- Negócios locais  
-- Lojas pequenas  
-- Criadores de conteúdo  
-
-Basta ajustar a query — por exemplo:  
-- `psicóloga pelotas instagram`  
-- `nutricionista ribeirão preto instagram`  
-- `clínica estética porto alegre instagram`  
-- `dentista salvador instagram`  
-
-A ferramenta automaticamente coleta todos os perfis relacionados.
+**3. Dashboard** — interface visual que carrega os leads qualificados, exibe o diagnóstico da IA por card, permite abrir o Instagram diretamente e marcar perfis como abordados com persistência local.
 
 ---
 
-## Query totalmente modular
+## O que o Crawler extrai
 
-A busca é totalmente customizável:  
-**Você escolhe qualquer termo**, e o scraper encontra potenciais clientes daquela área automaticamente.  
+Para cada perfil encontrado:
 
----
-
-## Comportamento 100% humano
-
-A ferramenta usa:
-
-- Chrome real  
-- Perfil persistente (cookies salvos)  
-- User-Agent humano  
-- Pequenos delays aleatórios  
-- Remoção do `navigator.webdriver`  
-
-Isso reduz drasticamente risco de captcha ou bloqueio.
+- `username` — @ do Instagram
+- `title` — nome do perfil
+- `link` — URL direta
+- `snippet` — descrição indexada pelo Google
+- `followers` — número de seguidores (quando disponível)
+- `query_origin` — qual busca gerou aquele lead
 
 ---
 
-## Saída
+## O que o Qualifier gera
 
-O scraper gera dois arquivos:
+Para cada lead, a IA produz:
 
-- **output.json** — dados completos estruturados  
-- **output.csv** — tabela pronta para importar em:
-  - Excel
-  - Google Sheets
-  - CRMs
-  - Apps de cold outreach
+- `diagnosis` — como o negócio provavelmente funciona hoje e onde está perdendo clientes
+- `opportunity` — qual melhoria prática pode ser feita
+- `offer_angle` — qual tipo de solução faz sentido oferecer
+
+O modelo roda 100% local via Ollama — sem custo por chamada, sem dependência de API externa.
+
+---
+
+## Para que serve
+
+Ideal para quem precisa encontrar clientes para serviços como:
+
+- Sites e landing pages
+- Branding e identidade visual
+- Automações e integrações
+- Consultoria digital
+
+Basta ajustar as queries para qualquer nicho e cidade — o pipeline faz o resto.
 
 ---
 
-## Por que isso é útil?
+## Comportamento anti-detecção
 
-Porque encontrar leads manualmente é lento.
+O crawler usa:
 
-Com esta ferramenta você consegue:
-
-- Mapear dezenas de potenciais clientes em **segundos**  
-- Trabalhar com nichos específicos  
-- Filtrar apenas perfis que **não têm site**  
-- Preparar listas para cold-email, cold-DM ou propostas comerciais
-
-É uma automação ideal para freelancers, webdevs, agências e consultores que precisam descobrir clientes rapidamente.
+- Chrome real com perfil persistente
+- User-Agent humano
+- Delays aleatórios entre páginas e queries
+- Remoção do `navigator.webdriver`
 
 ---
+
+## Performance
+
+- Crawler: ~10 leads por página, múltiplas queries em paralelo
+- Qualifier: ~12 segundos por lead com `phi3:mini` rodando local, 4 workers paralelos
+- 50 leads qualificados em aproximadamente 10 minutos

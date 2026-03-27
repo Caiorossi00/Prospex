@@ -29,7 +29,7 @@ async function loadResults() {
     const data = await res.json();
     const results = Array.isArray(data) ? data : [];
     const filtered = results.filter(
-      (item) => item.username && item.username.trim() !== "",
+      (item) => item.username && item.username.trim() !== ""
     );
     if (filtered.length === 0) {
       container.innerHTML = "<p>Nenhum lead encontrado.</p>";
@@ -59,7 +59,11 @@ function renderResults(results) {
           ${isApproached ? "✓ Abordado" : "Marcar como abordado"}
         </button>
       </div>
-      <div class="card-followers">${item.followers ? item.followers + " seguidores" : "seguidores não disponíveis"} · ${item.query_origin}</div>
+      <div class="card-followers">${
+        item.followers
+          ? item.followers + " seguidores"
+          : "seguidores não disponíveis"
+      } · ${item.query_origin}</div>
       <div class="card-label">Diagnóstico</div>
       <div class="card-text">${item.diagnosis || "—"}</div>
       <div class="card-label">Oportunidade</div>
@@ -68,13 +72,15 @@ function renderResults(results) {
       <div class="card-text">${item.offer_angle || "—"}</div>
       <div class="btn-div">
         <button class="btn-open" onclick="window.open('${instagramUrl}', '_blank')">Abrir Instagram</button>
-        <button class="btn-copy" onclick="copyText('${item.username}', this)">Copiar username</button>
+        <button class="btn-copy" onclick="copyText('${
+          item.username
+        }', this)">Copiar username</button>
       </div>
     `;
 
     const btn = card.querySelector(".check-btn");
     btn.addEventListener("click", () =>
-      toggleApproached(item.username, card, btn),
+      toggleApproached(item.username, card, btn)
     );
 
     container.appendChild(card);
